@@ -1,0 +1,117 @@
+body{
+	margin-left: 20px;
+	margin-top: 40px;
+}
+
+#imageView{
+	border: 1px solid #000;
+}
+
+#pre_image_view{
+	position: absolute;
+	left:20px;
+	border: 1px solid #000;
+}
+
+#toolbar{
+	position: absolute;
+	float: left;
+	top: 5px;
+	background-color: #dbdbdb;
+	padding: 2px;
+	border: 1px solid #000;
+}
+#toolbar div{
+	float: left;
+}
+
+#toolbar .button{
+	padding: 0px;
+	border: 0px none;
+}
+
+.bar_drager{
+	height: 20px;
+	width: 5px;
+	background-image: url('bar_dragger_background.png');
+	cursor: all-scroll;
+}
+
+#colorpicker_container{
+	position: absolute;
+	top: 0px;
+	right: 20px;
+}
+
+.bar_drager2{
+	height: 10px;
+	width: 20px;
+	background-image: url('bar_dragger_background.png');
+	cursor: all-scroll;
+}
+
+#color{
+	width: 55px;
+	border: 0px none;
+	padding: 0px;
+	padding-left: 2px;
+	margin-right: 5px;
+}
+
+#line_width{
+	width: 30px;
+	border: 0px none;
+	padding: 0px;
+	margin-right: 5px;
+}
+
+.line_width_container{
+	margin-right: 5px;
+}
+
+.tool{
+	height: 20px;
+	width: 20px;
+	border: 0px none;
+	background-position: center; 
+}
+
+.pencil.tool{
+	background-image: url('toolbar_pencil_icon.png');
+}
+
+.rectangle.tool{
+	background-image: url('toolbar_rectangle_icon.png');
+}
+
+.rectangle_filled.tool{
+	background-image: url('toolbar_rectangle_filled_icon.png');
+}
+
+.line.tool{
+	background-image: url('toolbar_line_icon.png');
+}
+
+.circle.tool{
+	background-image: url('toolbar_circle_icon.png');
+}
+
+.circle_filled.tool{
+	background-image: url('toolbar_circle_filled_icon.png');
+}
+
+.ellipse.tool{
+	background-image: url('toolbar_ellipse_icon.png');
+}
+
+.ellipse_filled.tool{
+	background-image: url('toolbar_ellipse_filled_icon.png');
+}
+
+.tool.selected, .tool.selected:hover{
+	border: 1px solid #F00;
+}
+
+.tool:hover{
+	border: 1px solid #0F0;
+}
