@@ -115,3 +115,31 @@ body{
 .tool:hover{
 	border: 1px solid #0F0;
 }
+
+#objects_list_container{
+	position: absolute;
+	top: 200px;
+	right: 20px;
+	width: 150px;
+	border: 1px solid #000;
+	background-color: #FFF;
+}
+
+#objects_list{
+	overflow-y:scroll;
+	height: 500px;
+}
+
+.list_object{
+	height: 60px;
+	border: 1px solid #000;
+	line-height: 12px;
+	font-size: 12px;
+}
+.list_object:hover{
+	background-color: #8aef90;
+}
+
+.list_object p{
+	margin: 0px;
+}

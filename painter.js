@@ -11,6 +11,8 @@ var biggest_obj_id = 0;
 var updates = 0;
 var auto_refresh_canvas = true;
 var tool, context;
+var canvas_objects = [];
+var object_types_names = {0:'Clear',1:'Pencil',2:'Rectangle',3:'Rectangle filled',4:'Line',5:'Circle',6:'Circle filled',7:'Ellipse',8:'Ellipse filled'}
 
 
 function drawEllipse(ctx, x, y, w, h, filled) {
@@ -78,7 +80,8 @@ window.addEventListener('load', function () {
 	$(document).ready(function() {
 		$('#colorpicker').farbtastic('#color');
 	});
-	
+	$("#objects_list_container").draggable({ handle: '.bar_drager2', opacity: 0.35 });
+		
 	//document.getElementById('pre_image_view').getContext('2d').fillRect(10,10,100,100);
 	
 	updater1 = setTimeout("refresh_drawing()",100);
@@ -391,7 +394,9 @@ function draw_from_data( xml_r ){
 		if( biggest_obj_id <= drawings[i].id ){
 			biggest_obj_id = drawings[i].id;
 		}
+		canvas_objects[ parseInt( drawings[i].id ) ] = drawings[i];
 		if( drawings[i].type_id == 0 ){
+			canvas_objects = [];
 			cont.clearRect( 0, 0, cont.canvas.width, cont.canvas.height );
 		}else if( drawings[i].type_id == 1 ){
 			cont.lineWidth   = drawings[i].line_width;
@@ -401,7 +406,7 @@ function draw_from_data( xml_r ){
 			for( var n = 1; n < drawings[i].points.length; n++ ){
 				cont.lineTo( drawings[i].points[n].x, drawings[i].points[n].y );
 			}
-				cont.stroke();
+			cont.stroke();
 		}else if( drawings[i].type_id == 2 ){
 			cont.lineWidth   = drawings[i].line_width;
 			cont.strokeStyle = drawings[i].color;
@@ -457,7 +462,6 @@ function draw_from_data( xml_r ){
 							drawings[i].points[1].x - drawings[i].points[0].x, 
 							drawings[i].points[1].y - drawings[i].points[0].y, 
 							false );
-			console.log( 'ellipse' );
 		}else if( drawings[i].type_id == 8 ){
 			cont.lineWidth   = drawings[i].line_width;
 			cont.strokeStyle = drawings[i].color;
@@ -471,7 +475,10 @@ function draw_from_data( xml_r ){
 		}
 	}
 	updates ++;
-	document.getElementById('deb_container').innerHTML = 'Updates: ' + updates;
+	document.getElementById('deb_container').innerHTML = 'Updates: ' + updates + ' Objects: ' + canvas_objects.length;
+	if( drawings.length > 0){
+		update_canvas_objects_list();
+	}
 	if( auto_refresh_canvas ){
 		updater1 = setTimeout("refresh_drawing()",1000);
 	}
@@ -553,5 +560,109 @@ function send_data( data_string, handl ){
 	xhttp.send( data_string );
 }
 
-// vim:set spell spl=en fo=wan1croql tw=80 ts=2 sw=2 sts=2 sta et ai cin fenc=utf-8 ff=unix:
+function draw_preview( object ){
+	cont = context;
+	cont.fillStyle   = "rgba(255, 255, 255, 0.8)";
+	cont.fillRect( 0, 0, context.canvas.width, context.canvas.height );
+	
+	if( object.type_id == 1 ){
+		cont.lineWidth   = object.line_width;
+		cont.strokeStyle = object.color;
+		cont.beginPath();
+		cont.moveTo( object.points[0].x, object.points[0].y );
+		for( var n = 1; n < object.points.length; n++ ){
+			cont.lineTo( object.points[n].x, object.points[n].y );
+		}
+		cont.stroke();
+	}else if( object.type_id == 2 ){
+		cont.lineWidth   = object.line_width;
+		cont.strokeStyle = object.color;
+		cont.strokeRect(object.points[0].x,  
+						object.points[0].y, 
+						object.points[1].x - object.points[0].x, 
+						object.points[1].y - object.points[0].y);
+	}else if( object.type_id == 3 ){
+		cont.lineWidth   = object.line_width;
+		cont.strokeStyle = object.color;
+		cont.fillStyle   = object.color;
+		cont.fillRect(object.points[0].x,  
+						object.points[0].y, 
+						object.points[1].x - object.points[0].x, 
+						object.points[1].y - object.points[0].y);
+	}else if( object.type_id == 4 ){
+		cont.lineWidth   = object.line_width;
+		cont.strokeStyle = object.color;
+		cont.beginPath();
+		cont.moveTo( object.points[0].x, object.points[0].y );
+		cont.lineTo( object.points[1].x, object.points[1].y );
+		cont.stroke();
+	}else if( object.type_id == 5 ){
+		radius = Math.sqrt( (object.points[1].x - object.points[0].x )*(object.points[1].x - object.points[0].x )
+				+ (object.points[1].y - object.points[0].y )*(object.points[1].y - object.points[0].y ) );
+		
+		
+		cont.lineWidth   = object.line_width;
+		cont.strokeStyle = object.color;
+		cont.beginPath();
+		cont.arc( object.points[0].x, object.points[0].y,radius,0,Math.PI*2,true);
+		cont.closePath();
+		cont.stroke();
+	}else if( object.type_id == 6 ){
+		radius = Math.sqrt( (object.points[1].x - object.points[0].x )*(object.points[1].x - object.points[0].x )
+				+ (object.points[1].y - object.points[0].y )*(object.points[1].y - object.points[0].y ) );
+		
+		
+		cont.lineWidth   = object.line_width;
+		cont.strokeStyle = object.color;
+		cont.fillStyle   = object.color;
+		cont.beginPath();
+		cont.arc( object.points[0].x, object.points[0].y,radius,0,Math.PI*2,true);
+		cont.closePath();
+		cont.fill();
+	}else if( object.type_id == 7 ){
+		cont.lineWidth   = object.line_width;
+		cont.strokeStyle = object.color;
+		cont.fillStyle   = object.color;
+		drawEllipse( 	cont, 
+						object.points[0].x,  
+						object.points[0].y, 
+						object.points[1].x - object.points[0].x, 
+						object.points[1].y - object.points[0].y, 
+						false );
+	}else if( object.type_id == 8 ){
+		cont.lineWidth   = object.line_width;
+		cont.strokeStyle = object.color;
+		cont.fillStyle   = object.color;
+		drawEllipse( 	cont, 
+						object.points[0].x,  
+						object.points[0].y, 
+						object.points[1].x - object.points[0].x, 
+						object.points[1].y - object.points[0].y, 
+						true );
+	}
+}
+
+function clear_preview(){
+	context.clearRect( 0, 0, context.canvas.width, context.canvas.height );
+}
+
+function update_canvas_objects_list(){
+	$('#objects_list').html('');
+	for( i in canvas_objects ){
+		list_obj = '';
+		list_obj += '<div class="list_object" object_id="'+canvas_objects[i].id+'">';
+		list_obj += '<p>ID: ' + canvas_objects[i].id;
+		list_obj += '<br/>Type: ' + canvas_objects[i].type_id + ' (' +  object_types_names[canvas_objects[i].type_id]+ ')';
+		list_obj += '<br/>Color: ' + canvas_objects[i].color;
+		list_obj += '<br/>Width: ' + canvas_objects[i].line_width;
+		list_obj += '<br/>Points: ' + canvas_objects[i].points.length;
+		list_obj += '</p></div>';
+		$('#objects_list').append( list_obj );
+	}
+	$('.list_object').mouseenter(function() {
+		draw_preview( canvas_objects[$(this).attr('object_id')] );
+	}).mouseleave(function() {
+		clear_preview();
+	});
+}
 
